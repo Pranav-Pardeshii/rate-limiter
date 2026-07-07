@@ -23,7 +23,7 @@ class TokenBucket:
 
 if __name__ == "__main__":
     def test():
-        bucket = TockenBucket(capacity=5, refill_rate=1)
+        bucket = TokenBucket(capacity=5, refill_rate=1)
 
         for i in range(5):
             result = bucket.consume()
