@@ -26,8 +26,10 @@ class TokenBucket:
     
 bucket = TokenBucket(capacity=5, refill_rate=1)
 def rate_limit():
-    if not bucket:
-        return HTTPException(status_code=429, detail="Too many requests!")
+    allowed = bucket.consume()
+    print(f"tokens left: {bucket.tokens:.2f}, allowed: {allowed}")
+    if not allowed:
+        raise HTTPException(status_code=429, detail="Too many requests!")
 
 @app.get("/ping")
 def ping(limit = Depends(rate_limit)):
