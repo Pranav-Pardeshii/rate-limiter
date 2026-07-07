@@ -1,4 +1,8 @@
 import time
+from fastapi import FastAPI, HTTPException, Depends
+
+app = FastAPI()
+
 
 class TokenBucket:
     def __init__(self, capacity, refill_rate):
@@ -20,20 +24,30 @@ class TokenBucket:
             return True
         return False
     
+bucket = TokenBucket(capacity=5, refill_rate=1)
+def rate_limit():
+    if not bucket:
+        return HTTPException(status_code=429, detail="Too many requests!")
+
+@app.get("/ping")
+def ping(limit = Depends(rate_limit)):
+    return {"message": "pong"}
+    
 
 if __name__ == "__main__":
-    def test():
-        bucket = TokenBucket(capacity=5, refill_rate=1)
+    # def test():
+    #     bucket = TokenBucket(capacity=5, refill_rate=1)
 
-        for i in range(5):
-            result = bucket.consume()
-            print(f"Request {i+1}: {'allowed' if result else 'BLOCKED'} (tokens left: {bucket.tokens:.2f})")
+    #     for i in range(5):
+    #         result = bucket.consume()
+    #         print(f"Request {i+1}: {'allowed' if result else 'BLOCKED'} (tokens left: {bucket.tokens:.2f})")
 
-        print("--- waiting 3 seconds ---")
-        time.sleep(3)
+    #     print("--- waiting 3 seconds ---")
+    #     time.sleep(3)
 
-        for i in range(5, 9):
-            result = bucket.consume()
-            print(f"Request {i+1}: {'allowed' if result else 'BLOCKED'} (tokens left: {bucket.tokens:.2f})")
+    #     for i in range(5, 9):
+    #         result = bucket.consume()
+    #         print(f"Request {i+1}: {'allowed' if result else 'BLOCKED'} (tokens left: {bucket.tokens:.2f})")
 
-    test()
+    # test()
+    pass
